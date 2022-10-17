@@ -61,10 +61,10 @@ func json_recieve(source net.Listener) {
 		go func(conn net.Conn) {
 			dec := json.NewDecoder(conn)
 			var shni []byte
-			for {
+
 				dec.Decode(&shni)
 				fmt.Println(time.Now())
-			}
+	
 		}(conn)
 	}
 }
