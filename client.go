@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/gob"
 	"encoding/json"
+	"fmt"
 
 	//"fmt"
 	"log"
@@ -15,10 +16,7 @@ import (
 	"time"
 )
 
-type message struct {
-	shit []byte
-	timestamp time.Time
-}
+
 
 type process_info struct {
 	ip   string
@@ -75,18 +73,19 @@ func main() {
 		text, _ := reader.ReadString('\n')
 		number, _ := strconv.Atoi(text[:len(text)-1])
 		randshni := genRandShni(number)
+		randshni2 := randshni
 		go func() {
 				enc := gob.NewEncoder(gob_connection)
-				m := message{shit: randshni, timestamp: time.Now()}
-
-				enc.Encode(m)	
+				fmt.Println("gob")
+				fmt.Println(time.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
+				enc.Encode(randshni)	
 		} ()
 
 		go func() {
 				enc := json.NewEncoder(json_connection)
-				m := message{shit: randshni, timestamp: time.Now()}
-
-				enc.Encode(m)
+				fmt.Println("json")
+				fmt.Println(time.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
+				enc.Encode(randshni2)
 		} ()
 
 	}

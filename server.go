@@ -11,21 +11,17 @@ import (
 	"time"
 )
 
-type message struct {
-	shit []byte
-	timestamp time.Time
-}
 
 func initialize_source(s string) net.Listener {
 	if s == "gob" {
-		ln, err := net.Listen("tcp", "127.0.0.1:8082")
+		ln, err := net.Listen("tcp", "127.0.0.1:8086")
 		if err != nil {
 			log.Fatal(err)
 		}
 		return ln
 	}
 	if s == "json" {
-		ln, err := net.Listen("tcp", "127.0.0.1:8083")
+		ln, err := net.Listen("tcp", "127.0.0.1:8087")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,10 +42,11 @@ func gob_recieve(source net.Listener) {
 		// pass connection into subproccess to handle incoming messages
 		go func(conn net.Conn) {
 			dec := gob.NewDecoder(conn)
-			var shni message
+			var shni []byte
 			for {
 				dec.Decode(&shni)
-				fmt.Println(time.Now().Sub(shni.timestamp))
+				fmt.Println(time.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
+
 			}
 		}(conn)
 
@@ -65,10 +62,10 @@ func json_recieve(source net.Listener) {
 
 		go func(conn net.Conn) {
 			dec := json.NewDecoder(conn)
-			var shni message
+			var shni []byte
 			for {
 				dec.Decode(&shni)
-				fmt.Println(time.Now().Sub(shni.timestamp))
+				fmt.Println(time.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
 			}
 	
 		}(conn)
