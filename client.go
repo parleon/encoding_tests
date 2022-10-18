@@ -4,9 +4,8 @@ import (
 	"bufio"
 	"encoding/gob"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
-
-	//"fmt"
 	"log"
 	"math/rand"
 	"net"
@@ -30,7 +29,7 @@ func genRandShni(x int) []byte {
 }
 
 // parse_config takes the path pointing to a config file and translates it into a map indexed by process id containing process_info structs
-func parse_config(path string) (map[string]process_info) {
+func parse_config(path string) map[string]process_info {
 
 	// initialize empty proccess map
 	processes := make(map[string]process_info)
@@ -67,26 +66,36 @@ func main() {
 	processes := parse_config("config")
 	gob_connection := initialize_outgoing(processes["gob"])
 	json_connection := initialize_outgoing(processes["json"])
+	xml_connection := initialize_outgoing(processes["xml"])
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
 		number, _ := strconv.Atoi(text[:len(text)-1])
 		randshni := genRandShni(number)
 		randshni2 := randshni
-		go func() {
-				enc := gob.NewEncoder(gob_connection)
-				fmt.Println("gob")
-				fmt.Println(time.Now().Format(timestring))
-				enc.Encode(randshni)	
-		} ()
+		randshni3 := randshni2
 
 		go func() {
-				enc := json.NewEncoder(json_connection)
-				fmt.Println("json")
-				fmt.Println(time.Now().Format(timestring))
-				enc.Encode(randshni2)
-		} ()
+			enc := gob.NewEncoder(gob_connection)
+			fmt.Println("gob")
+			fmt.Println(time.Now().Format(timestring))
+			enc.Encode(randshni)
+		}()
+
+		go func() {
+			enc := json.NewEncoder(json_connection)
+			fmt.Println("json")
+			fmt.Println(time.Now().Format(timestring))
+			enc.Encode(randshni2)
+		}()
+
+		go func() {
+			enc := xml.NewEncoder(xml_connection)
+			fmt.Println("xml")
+			fmt.Println(time.Now().Format(timestring))
+			enc.Encode(randshni3)
+		}()
 
 	}
-	
+
 }

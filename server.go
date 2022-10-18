@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/gob"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"log"
 	"net"
@@ -23,6 +24,13 @@ func initialize_source(s string) net.Listener {
 	}
 	if s == "json" {
 		ln, err := net.Listen("tcp", "127.0.0.1:8087")
+		if err != nil {
+			log.Fatal(err)
+		}
+		return ln
+	}
+	if s == "xml" {
+		ln, err := net.Listen("tcp", "127.0.0.1:8088")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -68,11 +76,29 @@ func json_recieve(source net.Listener) {
 				dec.Decode(&shni)
 				fmt.Println(time.Now().Format(timestring))
 			}
-	
+
 		}(conn)
 	}
 }
 
+func xml_recieve(source net.Listener) {
+	for {
+		conn, err := source.Accept()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		go func(conn net.Conn) {
+			dec := xml.NewDecoder(conn)
+			var shni []byte
+			for {
+				dec.Decode(&shni)
+				fmt.Println(time.Now().Format(timestring))
+			}
+
+		}(conn)
+	}
+}
 
 func main() {
 	args := os.Args
@@ -83,6 +109,9 @@ func main() {
 	}
 	if self == "json" {
 		json_recieve(server)
+	}
+	if self == "xml" {
+		xml_recieve(server)
 	}
 	defer server.Close()
 }
