@@ -11,6 +11,11 @@ import (
 	"time"
 )
 
+type message struct {
+	shit []byte
+	timestamp time.Time
+}
+
 func initialize_source(s string) net.Listener {
 	if s == "gob" {
 		ln, err := net.Listen("tcp", "127.0.0.1:8082")
@@ -41,10 +46,10 @@ func gob_recieve(source net.Listener) {
 		// pass connection into subproccess to handle incoming messages
 		go func(conn net.Conn) {
 			dec := gob.NewDecoder(conn)
-			var shni []byte
+			var shni message
 			for {
 				dec.Decode(&shni)
-				fmt.Println(time.Now())
+				fmt.Println(time.Now().Sub(shni.timestamp))
 			}
 		}(conn)
 
@@ -60,10 +65,11 @@ func json_recieve(source net.Listener) {
 
 		go func(conn net.Conn) {
 			dec := json.NewDecoder(conn)
-			var shni []byte
-
+			var shni message
+			for {
 				dec.Decode(&shni)
-				fmt.Println(time.Now())
+				fmt.Println(time.Now().Sub(shni.timestamp))
+			}
 	
 		}(conn)
 	}

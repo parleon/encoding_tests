@@ -3,7 +3,9 @@ package main
 import (
 	"bufio"
 	"encoding/gob"
-	"fmt"
+	"encoding/json"
+
+	//"fmt"
 	"log"
 	"math/rand"
 	"net"
@@ -13,6 +15,10 @@ import (
 	"time"
 )
 
+type message struct {
+	shit []byte
+	timestamp time.Time
+}
 
 type process_info struct {
 	ip   string
@@ -62,26 +68,25 @@ func initialize_outgoing(info process_info) net.Conn {
 func main() {
 
 	processes := parse_config("config")
-	//gob_connection := initialize_outgoing(processes["gob"])
+	gob_connection := initialize_outgoing(processes["gob"])
 	json_connection := initialize_outgoing(processes["json"])
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
 		number, _ := strconv.Atoi(text[:len(text)-1])
 		randshni := genRandShni(number)
-		randshni2 := randshni
-		fmt.Println(randshni)
-/*
 		go func() {
 				enc := gob.NewEncoder(gob_connection)
-				fmt.Println(time.Now())
-				enc.Encode(randshni)	
+				m := message{shit: randshni, timestamp: time.Now()}
+
+				enc.Encode(m)	
 		} ()
-*/
+
 		go func() {
-				enc := gob.NewEncoder(json_connection)
-				fmt.Println(time.Now())
-				enc.Encode(randshni2)
+				enc := json.NewEncoder(json_connection)
+				m := message{shit: randshni, timestamp: time.Now()}
+
+				enc.Encode(m)
 		} ()
 
 	}
