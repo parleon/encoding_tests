@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-
+const timestring = "Jan _2 15:04:05.000000000"
 
 type process_info struct {
 	ip   string
@@ -64,7 +64,6 @@ func initialize_outgoing(info process_info) net.Conn {
 }
 
 func main() {
-
 	processes := parse_config("config")
 	gob_connection := initialize_outgoing(processes["gob"])
 	json_connection := initialize_outgoing(processes["json"])
@@ -77,14 +76,14 @@ func main() {
 		go func() {
 				enc := gob.NewEncoder(gob_connection)
 				fmt.Println("gob")
-				fmt.Println(time.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
+				fmt.Println(time.Now().Format(timestring))
 				enc.Encode(randshni)	
 		} ()
 
 		go func() {
 				enc := json.NewEncoder(json_connection)
 				fmt.Println("json")
-				fmt.Println(time.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
+				fmt.Println(time.Now().Format(timestring))
 				enc.Encode(randshni2)
 		} ()
 

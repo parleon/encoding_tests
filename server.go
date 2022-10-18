@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+const timestring = "Jan _2 15:04:05.000000000"
 
 func initialize_source(s string) net.Listener {
 	if s == "gob" {
@@ -45,7 +46,7 @@ func gob_recieve(source net.Listener) {
 			var shni []byte
 			for {
 				dec.Decode(&shni)
-				fmt.Println(time.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
+				fmt.Println(time.Now().Format(timestring))
 
 			}
 		}(conn)
@@ -65,7 +66,7 @@ func json_recieve(source net.Listener) {
 			var shni []byte
 			for {
 				dec.Decode(&shni)
-				fmt.Println(time.Now().Format("2006-01-02T15:04:05.999999999Z07:00"))
+				fmt.Println(time.Now().Format(timestring))
 			}
 	
 		}(conn)
