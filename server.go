@@ -1,9 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"encoding/gob"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"log"
 	"net"
@@ -29,7 +29,7 @@ func initialize_source(s string) net.Listener {
 		}
 		return ln
 	}
-	if s == "xml" {
+	if s == "unencoded" {
 		ln, err := net.Listen("tcp", "127.0.0.1:8088")
 		if err != nil {
 			log.Fatal(err)
@@ -81,7 +81,7 @@ func json_recieve(source net.Listener) {
 	}
 }
 
-func xml_recieve(source net.Listener) {
+func unencoded_recieve(source net.Listener) {
 	for {
 		conn, err := source.Accept()
 		if err != nil {
@@ -89,10 +89,8 @@ func xml_recieve(source net.Listener) {
 		}
 
 		go func(conn net.Conn) {
-			dec := xml.NewDecoder(conn)
-			var shni []byte
 			for {
-				dec.Decode(&shni)
+				bufio.NewReader(conn).ReadString('\n')
 				fmt.Println(time.Now().Format(timestring))
 			}
 
@@ -110,8 +108,8 @@ func main() {
 	if self == "json" {
 		json_recieve(server)
 	}
-	if self == "xml" {
-		xml_recieve(server)
+	if self == "unencoded" {
+		unencoded_recieve(server)
 	}
 	defer server.Close()
 }

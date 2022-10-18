@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/gob"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"log"
 	"math/rand"
@@ -66,7 +65,7 @@ func main() {
 	processes := parse_config("config")
 	gob_connection := initialize_outgoing(processes["gob"])
 	json_connection := initialize_outgoing(processes["json"])
-	xml_connection := initialize_outgoing(processes["xml"])
+	unencoded_connection := initialize_outgoing(processes["unencoded"])
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
@@ -74,6 +73,9 @@ func main() {
 		randshni := genRandShni(number)
 		randshni2 := randshni
 		randshni3 := randshni2
+		n := []byte("\n")
+
+		randshni3 = append(randshni3, n...)
 
 		go func() {
 			enc := gob.NewEncoder(gob_connection)
@@ -90,10 +92,9 @@ func main() {
 		}()
 
 		go func() {
-			enc := xml.NewEncoder(xml_connection)
-			fmt.Println("xml")
+			fmt.Println("unencoded")
 			fmt.Println(time.Now().Format(timestring))
-			enc.Encode(randshni3)
+			unencoded_connection.Write(randshni3)
 		}()
 
 	}
